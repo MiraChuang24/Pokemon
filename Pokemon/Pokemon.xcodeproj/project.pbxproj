@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		9A4941702ED35598007EFD9E /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 9A49416F2ED35598007EFD9E /* Kingfisher */; };
+		9A4942572ED37812007EFD9E /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9A4942562ED37812007EFD9E /* SnapKit */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,6 +58,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9A4941702ED35598007EFD9E /* Kingfisher in Frameworks */,
+				9A4942572ED37812007EFD9E /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,6 +128,7 @@
 			name = Pokemon;
 			packageProductDependencies = (
 				9A49416F2ED35598007EFD9E /* Kingfisher */,
+				9A4942562ED37812007EFD9E /* SnapKit */,
 			);
 			productName = Pokemon;
 			productReference = 9A4941112ED314B7007EFD9E /* Pokemon.app */;
@@ -621,6 +624,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9A49416D2ED35501007EFD9E /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		9A4942562ED37812007EFD9E /* SnapKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 9A4942272ED36D7C007EFD9E /* XCRemoteSwiftPackageReference "SnapKit" */;
+			productName = SnapKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

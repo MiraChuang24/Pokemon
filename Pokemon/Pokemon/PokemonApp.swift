@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct PokemonApp: App {
+    @StateObject private var mainRouter = MainRouter()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(mainRouter)
         }
     }
 }

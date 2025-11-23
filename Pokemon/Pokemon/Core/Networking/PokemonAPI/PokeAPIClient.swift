@@ -58,26 +58,26 @@ final class PokeAPIClient: PokeAPIClientType {
 
     // MARK: - Type
 
-//    func fetchTypeList(limit: Int, offset: Int) async throws -> TypeListResponse {
-//        try await httpClient.sendRequest(
-//            .typeList(limit: limit, offset: offset),
-//            responseType: TypeListResponse.self
-//        )
-//    }
-//
-//    // MARK: - Region
-//
-//    func fetchRegionList() async throws -> RegionListResponse {
-//        try await httpClient.sendRequest(
-//            .regionList,
-//            responseType: RegionListResponse.self
-//        )
-//    }
-//
-//    func fetchRegionDetail(id: Int) async throws -> RegionDetailResponse {
-//        try await httpClient.sendRequest(
-//            .regionDetail(id: id),
-//            responseType: RegionDetailResponse.self
-//        )
-//    }
+    func fetchTypeList(limit: Int, offset: Int) async throws -> TypeListResponse {
+        try await httpClient.sendRequest(
+            .typeList(limit: limit, offset: offset),
+            responseType: TypeListResponse.self
+        )
+    }
+
+    // MARK: - Region
+
+    func fetchRegionList() async throws -> RegionListResponse {
+        try await httpClient.sendRequest(
+            .regionList,
+            responseType: RegionListResponse.self
+        )
+    }
+
+    func fetchRegionDetail(id: Int) async throws -> RegionDetailResponse {
+        try await httpClient.sendRequest(
+            .regionDetail(id: id),
+            responseType: RegionDetailResponse.self
+        )
+    }
 }

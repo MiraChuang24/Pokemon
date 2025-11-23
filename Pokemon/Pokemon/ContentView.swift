@@ -8,14 +8,22 @@
 import SwiftUI
 
 struct ContentView: View {
+    @EnvironmentObject private var router: MainRouter
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack(path: $router.path) {
+            // UIKit 的 HomeViewController，用 SwiftUI 包起來
+            HomeView()
+                .navigationDestination(for: AppRoute.self) { route in
+                    switch route {
+                    case .pokemonList:
+                        EmptyView()
+
+                    case .pokemonDetail(let id):
+                        EmptyView()
+                    }
+                }
         }
-        .padding()
     }
 }
 

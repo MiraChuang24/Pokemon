@@ -10,7 +10,10 @@ import Foundation
 struct APIParameters {
     var offset: Int
     var limit: Int
-    
+    init(offset: Int, limit: Int) {
+        self.offset = offset
+        self.limit = limit
+    }
     init?(url: String) {
         guard let url = URL(string: url),
               let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
