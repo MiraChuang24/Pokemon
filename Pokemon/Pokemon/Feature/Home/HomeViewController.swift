@@ -24,7 +24,7 @@ final class HomeViewController: UIViewController {
 
     var onTapSeeMoreFeatured: (() -> Void)?
     var onTapPokemon: ((PokemonDetailResponse) -> Void)?  // 點某隻寶可夢要進詳細頁
-
+    
     var vm = HomeViewModel()
     private var cancellables = Set<AnyCancellable>()
 
@@ -58,11 +58,11 @@ final class HomeViewController: UIViewController {
             }
             .store(in: &cancellables)
         vm.pokemonDidChange
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] id in
-                self?.reloadPokemon(id: id)
-            }
-            .store(in: &cancellables)
+               .receive(on: DispatchQueue.main)
+               .sink { [weak self] id in
+                   self?.reloadPokemon(id: id)
+               }
+               .store(in: &cancellables)
         vm.$typeItems
             .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
@@ -80,25 +80,25 @@ final class HomeViewController: UIViewController {
             }
             .store(in: &cancellables)
         vm.regionDidChange
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] id in
-                self?.reloadRegion(id: id)
-            }
-            .store(in: &cancellables)
-        //        // 監聽載入狀態
-        //        vm.$isLoading
-        //            .receive(on: DispatchQueue.main)
-        //            .sink { [weak self] isLoading in
-        //                guard let self = self else { return }
-        //                if isLoading {
-        //                    print("⏳ Loading Pokémon...")
-        //                    // 可以在這裡顯示 loading indicator
-        //                } else {
-        //                    print("✅ Loading complete")
-        //                    // 隱藏 loading indicator
-        //                }
-        //            }
-        //            .store(in: &cancellables)
+               .receive(on: DispatchQueue.main)
+               .sink { [weak self] id in
+                   self?.reloadRegion(id: id)
+               }
+               .store(in: &cancellables)
+//        // 監聽載入狀態
+//        vm.$isLoading
+//            .receive(on: DispatchQueue.main)
+//            .sink { [weak self] isLoading in
+//                guard let self = self else { return }
+//                if isLoading {
+//                    print("⏳ Loading Pokémon...")
+//                    // 可以在這裡顯示 loading indicator
+//                } else {
+//                    print("✅ Loading complete")
+//                    // 隱藏 loading indicator
+//                }
+//            }
+//            .store(in: &cancellables)
 
         // 監聽錯誤訊息
         vm.$errorMessage
@@ -135,27 +135,27 @@ final class HomeViewController: UIViewController {
         snapshot.reloadItems([item])
         dataSource.apply(snapshot, animatingDifferences: true)
     }
-
+    
     /// 重新載入 Type Section 的 UI
     func reloadTypeSection() {
         var snapshot = dataSource.snapshot()
-
+        
         // 確認 types section 存在
         guard snapshot.sectionIdentifiers.contains(.types) else {
             print("⚠️ Types section not found in snapshot")
             return
         }
-
+        
         // 刪除 types section 的舊 items
         let currentTypeItems = snapshot.itemIdentifiers(inSection: .types)
         snapshot.deleteItems(currentTypeItems)
-
+        
         // 添加新的 type items
         snapshot.appendItems(vm.typeItems, toSection: .types)
-
+        
         // 套用變更，並帶有動畫效果
         dataSource.apply(snapshot, animatingDifferences: true)
-
+        
         print("✅ Reloaded types section with \(vm.typeItems.count) items")
     }
     private func setupView() {
@@ -165,7 +165,7 @@ final class HomeViewController: UIViewController {
     }
     private func setupCollectionView() {
         collectionViewUI()
-
+        collectionView.delegate = self
         // Register cells
         HomeItem.allCases.forEach { [weak self] item in
             guard let self else { return }
@@ -174,15 +174,14 @@ final class HomeViewController: UIViewController {
                 forCellWithReuseIdentifier: item.cellIdentifier
             )
         }
-
+        
         // Register header
         collectionView.register(
             HomeSectionHeaderView.self,
-            forSupplementaryViewOfKind: UICollectionView
-                .elementKindSectionHeader,
+            forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader,
             withReuseIdentifier: HomeSectionHeaderView.reuseIdentifier
         )
-
+        
         collectionView.dataSource = dataSource
         applySnapshot()
     }
@@ -227,35 +226,28 @@ final class HomeViewController: UIViewController {
 
             return cell
         }
-
+        
         // Configure supplementary view (header)
-        dataSource.supplementaryViewProvider = {
-            collectionView,
-            kind,
-            indexPath in
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
             guard kind == UICollectionView.elementKindSectionHeader else {
                 return nil
             }
-
-            let header =
-                collectionView.dequeueReusableSupplementaryView(
-                    ofKind: kind,
-                    withReuseIdentifier: HomeSectionHeaderView.reuseIdentifier,
-                    for: indexPath
-                ) as? HomeSectionHeaderView
-
+            
+            let header = collectionView.dequeueReusableSupplementaryView(
+                ofKind: kind,
+                withReuseIdentifier: HomeSectionHeaderView.reuseIdentifier,
+                for: indexPath
+            ) as? HomeSectionHeaderView
+            
             if let section = HomeSection(rawValue: indexPath.section) {
-                header?.configure(
-                    title: section.title,
-                    showMoreButton: section.showMoreButton
-                )
-
+                header?.configure(title: section.title, showMoreButton: section.showMoreButton)
+                
                 // Handle more button tap
                 header?.onMoreButtonTapped = { [weak self] in
                     self?.handleMoreButtonTapped(for: section)
                 }
             }
-
+            
             return header
         }
 
@@ -324,7 +316,7 @@ final class HomeViewController: UIViewController {
             trailing: 16
         )
         section.interGroupSpacing = 0
-
+        
         // Add header
         let headerSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
@@ -336,7 +328,7 @@ final class HomeViewController: UIViewController {
             alignment: .top
         )
         section.boundarySupplementaryItems = [header]
-
+        
         return section
     }
 
@@ -366,7 +358,7 @@ final class HomeViewController: UIViewController {
             trailing: 16
         )
         section.interGroupSpacing = 12
-
+        
         // Add header
         let headerSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
@@ -378,7 +370,7 @@ final class HomeViewController: UIViewController {
             alignment: .top
         )
         section.boundarySupplementaryItems = [header]
-
+        
         return section
     }
 
@@ -410,7 +402,7 @@ final class HomeViewController: UIViewController {
             trailing: 16
         )
         section.interGroupSpacing = 20
-
+        
         // Add header
         let headerSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
@@ -422,16 +414,16 @@ final class HomeViewController: UIViewController {
             alignment: .top
         )
         section.boundarySupplementaryItems = [header]
-
+        
         return section
     }
 
     // MARK: - Helper Methods
-
+    
     /// 處理 More 按鈕點擊
     private func handleMoreButtonTapped(for section: HomeSection) {
         print("🔘 More button tapped for section: \(section.title)")
-
+        
         switch section {
         case .featuredPokémon:
             onTapSeeMoreFeatured?()
@@ -441,7 +433,7 @@ final class HomeViewController: UIViewController {
             showAlert(title: "Regions", message: "Navigate to full regions list")
         }
     }
-
+    
     /// 顯示簡單提示（可以替換為實際的導航邏輯）
     private func showAlert(title: String, message: String) {
         let alert = UIAlertController(
@@ -462,5 +454,35 @@ final class HomeViewController: UIViewController {
         )
         alert.addAction(UIAlertAction(title: "確定", style: .default))
         present(alert, animated: true)
+    }
+}
+// MARK: - UICollectionViewDelegate
+extension HomeViewController: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView,
+                        didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
+
+        guard let item = dataSource.itemIdentifier(for: indexPath) else {
+            return
+        }
+
+        switch item {
+        case .pokemon(let id):
+            // 從 ViewModel 拿這隻寶可夢的狀態
+            guard let state = vm.pokemons[id] else { return }
+
+            // 只有在已經載入完成時才跳詳情頁
+            if case let .loaded(pokemon) = state {
+                onTapPokemon?(pokemon)       // ⭐️ 呼叫 closure 交給外層處理導航
+            } else {
+                print("⚠️ Pokemon \(id) not loaded yet, state: \(state)")
+            }
+
+        case .type:
+            break
+
+        case .region:
+            break
+        }
     }
 }
