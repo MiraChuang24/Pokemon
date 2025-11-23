@@ -18,8 +18,8 @@ struct HomeView: UIViewControllerRepresentable {
             router.push(.pokemonList)
         }
 
-        vc.onTapPokemon = { id in
-            router.push(.pokemonDetail(id: id))
+        vc.onTapPokemon = { pockmon in
+            router.push(.pokemonDetail(pokemon: pockmon))
         }
 
         return vc

@@ -23,7 +23,7 @@ final class HomeViewController: UIViewController {
     private lazy var dataSource = createDataSource()
 
     var onTapSeeMoreFeatured: (() -> Void)?
-    var onTapPokemon: ((Int) -> Void)?  // 點某隻寶可夢要進詳細頁
+    var onTapPokemon: ((PokemonDetailResponse) -> Void)?  // 點某隻寶可夢要進詳細頁
 
     var vm = HomeViewModel()
     private var cancellables = Set<AnyCancellable>()

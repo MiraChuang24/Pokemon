@@ -9,13 +9,17 @@ import Kingfisher
 import SwiftUI
 
 struct ImageLoaderView: View {
-    @ObservedObject var viewModel: ImageLoaderViewModel
-
+    @ObservedObject var viewModel: ImageLoaderViewModel = .init(
+        urlString:
+            ""
+    )
+    var showBackground: Bool = true
     var body: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color(.imageBackground))
-
+            if showBackground {
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(Color(.imageBackground))
+            }
             if viewModel.isNoImage {
                 Image("questionmark")
             } else if let imageURL = viewModel.imageURL {

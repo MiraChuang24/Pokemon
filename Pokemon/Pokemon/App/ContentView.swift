@@ -17,7 +17,7 @@ struct ContentView: View {
                 .navigationDestination(for: AppRoute.self) { route in
                     switch route {
                     case .pokemonList:
-                        EmptyView()
+                        PokemonListView()
 
                     case .pokemonDetail(let id):
                         EmptyView()

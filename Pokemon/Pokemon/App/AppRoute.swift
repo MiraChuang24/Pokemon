@@ -11,5 +11,5 @@ import Foundation
 /// - 首頁是 root，不放在 route 裡
 enum AppRoute: Hashable {
     case pokemonList                       // 首頁 "See more" 進入的列表頁
-    case pokemonDetail(id: Int)            // 任一寶可夢的詳細頁
+    case pokemonDetail(pokemon: PokemonDetailResponse)            // 任一寶可夢的詳細頁
 }

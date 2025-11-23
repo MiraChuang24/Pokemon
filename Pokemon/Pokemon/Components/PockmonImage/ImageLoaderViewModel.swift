@@ -15,7 +15,7 @@ final class ImageLoaderViewModel: ObservableObject {
     // MARK: - Input
     private var urlString: String? {
         didSet {
-            if urlString == nil, urlString?.isEmpty ?? true {
+            if urlString == nil || urlString?.isEmpty ?? true {
                 isNoImage = true
             } else {
                 isNoImage = false
@@ -38,6 +38,11 @@ final class ImageLoaderViewModel: ObservableObject {
     // MARK: - Init
     init(urlString: String) {
         self.urlString = urlString
+        if urlString.isEmpty {
+            isNoImage = true
+        } else {
+            isNoImage = false
+        }
         loadImage()
     }
 
