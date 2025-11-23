@@ -5,9 +5,9 @@
 //  Created by 莊羚羊 on 2025/11/24.
 //
 
-import Combine
-import SnapKit
 import UIKit
+import SnapKit
+import Combine
 
 class PokemonCareUIView: UIView, NibOwnerLoadable {
 
@@ -16,6 +16,13 @@ class PokemonCareUIView: UIView, NibOwnerLoadable {
     @IBOutlet weak var nameLabel: UILabel!
     @IBOutlet weak var typesStack: UIStackView!
     @IBOutlet weak var favoriteButton: UIButton!
+
+    // MARK: - State
+
+    private var pokemonID: Int?
+    private var cancellables = Set<AnyCancellable>()
+
+    // MARK: - Init
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -27,6 +34,8 @@ class PokemonCareUIView: UIView, NibOwnerLoadable {
         setupView()
     }
 
+    // MARK: - Setup
+
     private func setupView() {
         loadNibContent()
         backgroundColor = .pokemonCareBK
@@ -34,23 +43,69 @@ class PokemonCareUIView: UIView, NibOwnerLoadable {
         numberLabel.font = .pokemonCareBody
         nameLabel.font = .pokemonCareBody
 
+        setupFavoriteButton()
+        bindFavoriteStorage()
     }
+
+    private func setupFavoriteButton() {
+        favoriteButton.tintColor = .systemRed
+        favoriteButton.backgroundColor = .white
+        favoriteButton.layer.cornerRadius = favoriteButton.bounds.height / 2
+        favoriteButton.layer.masksToBounds = true
+        favoriteButton.setTitle("", for: .normal)
+        // 預設顯示空心
+        favoriteButton.setImage(
+            UIImage(systemName: "heart"),
+            for: .normal
+        )
+
+        favoriteButton.addTarget(
+            self,
+            action: #selector(favoriteButtonTapped),
+            for: .touchUpInside
+        )
+    }
+
+    /// 監聽 FavoriteStorage 的變化，只要收藏集合改變，就更新這張卡片的愛心狀態
+    private func bindFavoriteStorage() {
+        FavoriteStorage.shared.valuesPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] favorites in
+                guard let self,
+                      let id = self.pokemonID
+                else { return }
+
+                let isFavorite = favorites.contains(id)
+                self.updateFavoriteButton(isFavorite: isFavorite)
+            }
+            .store(in: &cancellables)
+    }
+
+    // MARK: - Public API
 
     func updateView(with state: PokemonCareState) {
         switch state {
         case .noData:
+            pokemonID = nil
             pockmonImageView.configure(urlString: nil)
             numberLabel.text = ""
             nameLabel.text = ""
             clearTypes()
+            favoriteButton.isEnabled = false
+            updateFavoriteButton(isFavorite: false)
 
         case .loading:
+            pokemonID = nil
             pockmonImageView.configure(urlString: nil)
             numberLabel.text = "Loading..."
             nameLabel.text = ""
             clearTypes()
+            favoriteButton.isEnabled = false
+            updateFavoriteButton(isFavorite: false)
 
         case .loaded(let pokemon):
+            pokemonID = pokemon.id
+
             pockmonImageView.configure(
                 urlString: pokemon.sprites.frontDefault
             )
@@ -58,13 +113,37 @@ class PokemonCareUIView: UIView, NibOwnerLoadable {
             nameLabel.text = pokemon.name.uppercased()
             updateTypes(pokemon: pokemon)
 
+            favoriteButton.isEnabled = true
+            let isFavorite = FavoriteStorage.shared.isFavorite(pokemon.id)
+            updateFavoriteButton(isFavorite: isFavorite)
+
         case .error:
+            pokemonID = nil
             pockmonImageView.configure(urlString: nil)
             numberLabel.text = "Error"
             nameLabel.text = ""
             clearTypes()
+            favoriteButton.isEnabled = false
+            updateFavoriteButton(isFavorite: false)
         }
     }
+
+    // MARK: - Favorite
+
+    @objc
+    private func favoriteButtonTapped() {
+        guard let id = pokemonID else { return }
+        FavoriteStorage.shared.toggle(id)
+        // UI 更新會由 bindFavoriteStorage 的 sink 自動處理
+    }
+
+    private func updateFavoriteButton(isFavorite: Bool) {
+        let imageName = isFavorite ? "heart.fill" : "heart"
+        favoriteButton.setImage(UIImage(systemName: imageName), for: .normal)
+        favoriteButton.tintColor = isFavorite ? .systemRed : .systemGray3
+    }
+
+    // MARK: - Types
 
     private func clearTypes() {
         typesStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
@@ -73,10 +152,8 @@ class PokemonCareUIView: UIView, NibOwnerLoadable {
     private func updateTypes(pokemon: PokemonDetailResponse) {
         clearTypes()
 
-        // 假設 pokemon.types: [PokemonTypeSlot] & 裡面有 type.name
         for typeEntry in pokemon.types {
             let type = PokemonType(from: typeEntry.type.url)
-
             typesStack.addArrangedSubview(typeView(type: type))
         }
     }
@@ -101,8 +178,8 @@ class PokemonCareUIView: UIView, NibOwnerLoadable {
         bkView.layer.masksToBounds = true
         return bkView
     }
-
 }
+
 @MainActor
 class PokemonCareViewModel: ObservableObject {
 
