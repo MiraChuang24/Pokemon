@@ -211,6 +211,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				9A49416D2ED35501007EFD9E /* XCRemoteSwiftPackageReference "Kingfisher" */,
+				9A4942272ED36D7C007EFD9E /* XCRemoteSwiftPackageReference "SnapKit" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9A4941122ED314B7007EFD9E /* Products */;
@@ -603,6 +604,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 8.6.2;
+			};
+		};
+		9A4942272ED36D7C007EFD9E /* XCRemoteSwiftPackageReference "SnapKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SnapKit/SnapKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.7.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
