@@ -117,6 +117,28 @@ struct PokemonListResponse: Codable {
     let next: String?
     let previous: String?
     let results: [PokeListResult]
+    
+    let nextParameters: APIParameters?
+    
+    enum CodingKeys: String, CodingKey {
+        case count, next, previous, results
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        self.count = try container.decode(Int.self, forKey: .count)
+        self.next = try container.decodeIfPresent(String.self, forKey: .next)
+        self.previous = try container.decodeIfPresent(String.self, forKey: .previous)
+        self.results = try container.decode([PokeListResult].self, forKey: .results)
+        
+        // 如果有 next URL，就解析出參數
+        if let nextURL = self.next {
+            self.nextParameters = APIParameters(url: nextURL)
+        } else {
+            self.nextParameters = nil
+        }
+    }
 }
 
 struct PokeListResult: Codable, Hashable {
