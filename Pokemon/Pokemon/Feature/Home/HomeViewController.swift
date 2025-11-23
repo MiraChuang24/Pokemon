@@ -305,8 +305,6 @@ final class HomeViewController: UIViewController {
             repeatingSubitem: item,
             count: 3
         )
-        group.interItemSpacing = .fixed(16)
-
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .groupPaging
         section.contentInsets = NSDirectionalEdgeInsets(
@@ -315,7 +313,7 @@ final class HomeViewController: UIViewController {
             bottom: 16,
             trailing: 16
         )
-        section.interGroupSpacing = 0
+        section.interGroupSpacing = 16
         
         // Add header
         let headerSize = NSCollectionLayoutSize(
