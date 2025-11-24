@@ -376,12 +376,10 @@ final class HomeViewController: UIViewController {
         switch section {
         case .featuredPokémon:
             onTapSeeMoreFeatured?()
-        case .types:
-            showAlert(title: "Types", message: "Navigate to full types list")
-        case .regions:
+        default:
             showAlert(
-                title: "Regions",
-                message: "Navigate to full regions list"
+                title: "功能開發中",
+                message: "此功能尚未完成，敬請期待！"
             )
         }
     }

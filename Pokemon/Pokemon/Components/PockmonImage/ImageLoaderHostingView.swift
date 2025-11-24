@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import SnapKit
 
 final class ImageLoaderHostingView: UIView {
 
@@ -43,19 +44,9 @@ final class ImageLoaderHostingView: UIView {
         hostingController.view.backgroundColor = .clear
 
         addSubview(hostingController.view)
-        hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            hostingController.view.topAnchor.constraint(equalTo: topAnchor),
-            hostingController.view.bottomAnchor.constraint(
-                equalTo: bottomAnchor
-            ),
-            hostingController.view.leadingAnchor.constraint(
-                equalTo: leadingAnchor
-            ),
-            hostingController.view.trailingAnchor.constraint(
-                equalTo: trailingAnchor
-            ),
-        ])
+        hostingController.view.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
     }
 
     // MARK: - 對外 API：UIKit / XIB 都用這個設 URL
