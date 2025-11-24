@@ -64,8 +64,6 @@ struct Sprites: Codable, Hashable {
     let backShiny: String?
     let backFemale: String?
     let backShinyFemale: String?
-    
-    // 🔹 新增：other（dream_world / official-artwork 等）
     let other: OtherSprites?
 
     enum CodingKeys: String, CodingKey {

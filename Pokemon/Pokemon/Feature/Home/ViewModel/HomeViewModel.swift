@@ -13,7 +13,6 @@ class HomeViewModel: ObservableObject {
     @Published var pokemonItems: [HomeItem] = []
     @Published var typeItems: [HomeItem] = []
     @Published var regionItems: [HomeItem] = []
-    //    @Published var isLoading: Bool = false
     @Published var errorMessage: String?
 
     // MARK: - Properties
@@ -48,7 +47,6 @@ class HomeViewModel: ObservableObject {
     // MARK: - Private Methods
     @MainActor
     private func fetchAllRegion() async {
-        //        isLoading = true
         Task {
             errorMessage = nil
             typeItems.removeAll()
@@ -68,8 +66,6 @@ class HomeViewModel: ObservableObject {
             }
 
         }
-
-        //        isLoading = false
     }
     private func fetchRegion(id: Int) {
         regions[id] = nil
@@ -144,7 +140,6 @@ class HomeViewModel: ObservableObject {
 
     @MainActor
     private func fetchPokemons() async {
-        //        isLoading = true
         errorMessage = nil
 
         do {
@@ -158,11 +153,9 @@ class HomeViewModel: ObservableObject {
                 pokemons[id] = .noData
                 fetchPokemon(id: id)
             }
-            //            isLoading = false
         } catch {
             errorMessage =
                 "Failed to fetch Pokémon: \(error.localizedDescription)"
-            //            isLoading = false
         }
     }
     private func fetchPokemon(id: Int) {

@@ -35,7 +35,7 @@ final class URLSessionHTTPClient: HTTPClient {
             throw NetworkError.invalidURL
         }
 
-        // 🟦 LOG: Request Info
+        // LOG: Request Info
         print("=== API Request Start ===")
         print("--- Request Info ---")
         print("URL: \(request.url?.absoluteString ?? "nil")")
@@ -67,7 +67,7 @@ final class URLSessionHTTPClient: HTTPClient {
             throw NetworkError.invalidResponse
         }
 
-        // 🟥 如果 statusCode 不在 200~299 之間，先印出後 throw
+        // 如果 statusCode 不在 200~299 之間，先印出後 throw
         guard (200..<300).contains(httpResponse.statusCode) else {
             print("--- Response Info ---")
             print("Status Code: \(httpResponse.statusCode)")
@@ -85,7 +85,7 @@ final class URLSessionHTTPClient: HTTPClient {
             let decoder = JSONDecoder()
             let decoded = try decoder.decode(T.self, from: data)
 
-            // 🟩 印出 Response JSON
+            // 印出 Response JSON
             print("--- Response Info ---")
             print("Status Code: \(httpResponse.statusCode)")
 

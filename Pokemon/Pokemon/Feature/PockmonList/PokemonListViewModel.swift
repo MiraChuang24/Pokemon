@@ -125,7 +125,6 @@ class PokemonListViewModel: ObservableObject {
         } catch {
             errorMessage =
                 "Failed to load Pokémon: \(error.localizedDescription)"
-            print("❌ Error loading Pokémon: \(error)")
         }
 
         isLoading = false
@@ -160,7 +159,6 @@ class PokemonListViewModel: ObservableObject {
                             .fetchPokemonDetail(id: id)
                         return (index, detail)
                     } catch {
-                        print("❌ Failed to fetch pokemon \(id): \(error)")
                         return (index, nil)
                     }
                 }
