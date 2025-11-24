@@ -316,16 +316,8 @@ final class HomeViewController: UIViewController {
         section.interGroupSpacing = 16
         
         // Add header
-        let headerSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(44)
-        )
-        let header = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: headerSize,
-            elementKind: UICollectionView.elementKindSectionHeader,
-            alignment: .top
-        )
-        section.boundarySupplementaryItems = [header]
+        
+        section.boundarySupplementaryItems = [createHeaderLayout()]
         
         return section
     }
@@ -358,16 +350,8 @@ final class HomeViewController: UIViewController {
         section.interGroupSpacing = 12
         
         // Add header
-        let headerSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(44)
-        )
-        let header = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: headerSize,
-            elementKind: UICollectionView.elementKindSectionHeader,
-            alignment: .top
-        )
-        section.boundarySupplementaryItems = [header]
+        
+        section.boundarySupplementaryItems = [createHeaderLayout()]
         
         return section
     }
@@ -376,7 +360,7 @@ final class HomeViewController: UIViewController {
     private func regionsLayout() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(0.5),
-            heightDimension: .fractionalWidth(0.3)
+            heightDimension: .fractionalWidth(0.25)
         )
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
@@ -402,6 +386,14 @@ final class HomeViewController: UIViewController {
         section.interGroupSpacing = 20
         
         // Add header
+        
+        section.boundarySupplementaryItems = [createHeaderLayout()]
+        
+        return section
+    }
+
+     private func createHeaderLayout() -> NSCollectionLayoutBoundarySupplementaryItem{
+        // Add header
         let headerSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(1.0),
             heightDimension: .estimated(44)
@@ -411,11 +403,8 @@ final class HomeViewController: UIViewController {
             elementKind: UICollectionView.elementKindSectionHeader,
             alignment: .top
         )
-        section.boundarySupplementaryItems = [header]
-        
-        return section
+        return header
     }
-
     // MARK: - Helper Methods
     
     /// 處理 More 按鈕點擊

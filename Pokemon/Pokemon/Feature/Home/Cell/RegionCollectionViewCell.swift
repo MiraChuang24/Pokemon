@@ -25,7 +25,9 @@ class RegionCollectionViewCell: UICollectionViewCell {
     func setupView() {
         regionBKView.layer.cornerRadius = 12
         regionBKView.backgroundColor = .pokemonCareBK
-
+        locationLabel.font = .pokemonCareType
+        locationLabel.textColor = .secondaryLabel
+        regionNameLabel.font = .pokemonCareBody
     }
     
     func configure(with region: RegionDetailResponse?) {

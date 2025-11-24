@@ -25,6 +25,7 @@ class TypeCollectionViewCell: UICollectionViewCell {
 
     func setupView() {
         typeLabel.font = .pokemonCareBody
+        typeLabel.textColor = .white
         typeBKView.layer.cornerRadius = 12
         typeBKView.backgroundColor = .clear
     }

@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct PokemonDetailView: View {
 
     // MARK: - Input
@@ -150,16 +148,16 @@ struct PokemonDetailView: View {
     }
 
     private func typeBadge(_ type: PokemonType) -> some View {
-    Text(type.name.capitalized)
-        .font(.system(size: 14, weight: .semibold))
-        .foregroundColor(.white)
-        .padding(.horizontal, 18)
-        .padding(.vertical, 8)
-        .background(
-            Capsule()
-                .fill(Color(type.color))
-        )
-}
+        Text(type.name.capitalized)
+            .font(.system(size: 14, weight: .semibold))
+            .foregroundColor(.white)
+            .padding(.horizontal, 18)
+            .padding(.vertical, 8)
+            .background(
+                Capsule()
+                    .fill(Color(type.color))
+            )
+    }
 
     // MARK: - Weight / Height
 

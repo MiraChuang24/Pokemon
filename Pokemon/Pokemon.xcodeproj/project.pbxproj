@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		9A4941702ED35598007EFD9E /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 9A49416F2ED35598007EFD9E /* Kingfisher */; };
 		9A4942572ED37812007EFD9E /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9A4942562ED37812007EFD9E /* SnapKit */; };
+		FFE402DA2ED3F849008C4FA1 /* LookinServer in Frameworks */ = {isa = PBXBuildFile; productRef = FFE402D92ED3F849008C4FA1 /* LookinServer */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9A4941702ED35598007EFD9E /* Kingfisher in Frameworks */,
+				FFE402DA2ED3F849008C4FA1 /* LookinServer in Frameworks */,
 				9A4942572ED37812007EFD9E /* SnapKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -129,6 +131,7 @@
 			packageProductDependencies = (
 				9A49416F2ED35598007EFD9E /* Kingfisher */,
 				9A4942562ED37812007EFD9E /* SnapKit */,
+				FFE402D92ED3F849008C4FA1 /* LookinServer */,
 			);
 			productName = Pokemon;
 			productReference = 9A4941112ED314B7007EFD9E /* Pokemon.app */;
@@ -215,6 +218,7 @@
 			packageReferences = (
 				9A49416D2ED35501007EFD9E /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				9A4942272ED36D7C007EFD9E /* XCRemoteSwiftPackageReference "SnapKit" */,
+				FFE402D82ED3F839008C4FA1 /* XCRemoteSwiftPackageReference "LookinServer" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9A4941122ED314B7007EFD9E /* Products */;
@@ -617,6 +621,14 @@
 				minimumVersion = 5.7.1;
 			};
 		};
+		FFE402D82ED3F839008C4FA1 /* XCRemoteSwiftPackageReference "LookinServer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/QMUI/LookinServer/";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.2.8;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -629,6 +641,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9A4942272ED36D7C007EFD9E /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		FFE402D92ED3F849008C4FA1 /* LookinServer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = FFE402D82ED3F839008C4FA1 /* XCRemoteSwiftPackageReference "LookinServer" */;
+			productName = LookinServer;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -17,7 +17,7 @@ struct ImageLoaderView: View {
     var body: some View {
         ZStack {
             if showBackground {
-                RoundedRectangle(cornerRadius: 20)
+                RoundedRectangle(cornerRadius: 12)
                     .fill(Color(.secondarySystemBackground))
             }
             if viewModel.isNoImage {
