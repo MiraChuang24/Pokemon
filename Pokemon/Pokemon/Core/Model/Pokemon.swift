@@ -7,6 +7,7 @@
 
 import Foundation
 
+
 struct PokemonDetailResponse: Codable, Hashable, Identifiable {
     let id: Int
     let name: String
@@ -31,6 +32,29 @@ struct PokemonDetailResponse: Codable, Hashable, Identifiable {
     }
 }
 
+extension PokemonDetailResponse {
+    /// 把 PokeAPI 的 types 轉成你定義的 PokemonType enum
+    var pokemonTypes: [PokemonType] {
+        types
+            .sorted { $0.slot < $1.slot } // 先照 slot 排
+            .compactMap { PokemonType(from: $0.type.url) }
+    }
+    
+    /// 方便取指定 stat（hp / attack / defense / speed 等）
+    func statValue(named key: String) -> Int? {
+        stats.first { $0.stat.name == key }?.baseStat
+    }
+    
+    /// 用 sprites.frontDefault 當詳情大圖
+    var spriteURLString: String? {
+        sprites.frontDefault
+    }
+    
+    /// 顯示用的 ID，例如 "#003"
+    var displayID: String {
+        String(format: "#%03d", id)
+    }
+}
 struct Sprites: Codable, Hashable {
     let frontDefault: String?
     let frontShiny: String?
@@ -41,6 +65,9 @@ struct Sprites: Codable, Hashable {
     let backFemale: String?
     let backShinyFemale: String?
     
+    // 🔹 新增：other（dream_world / official-artwork 等）
+    let other: OtherSprites?
+
     enum CodingKeys: String, CodingKey {
         case frontDefault = "front_default"
         case frontShiny = "front_shiny"
@@ -50,8 +77,47 @@ struct Sprites: Codable, Hashable {
         case backShiny = "back_shiny"
         case backFemale = "back_female"
         case backShinyFemale = "back_shiny_female"
+        case other
     }
 }
+
+/// sprites.other
+struct OtherSprites: Codable, Hashable {
+    let dreamWorld: SpriteSet?
+    let officialArtwork: OfficialArtworkSprites?
+
+    enum CodingKeys: String, CodingKey {
+        case dreamWorld = "dream_world"
+        case officialArtwork = "official-artwork"
+    }
+    init(dreamWorld: SpriteSet?, officialArtwork: OfficialArtworkSprites?) {
+        self.dreamWorld = dreamWorld
+        self.officialArtwork = officialArtwork
+    }
+}
+
+/// 例如 dream_world: front_default / front_female
+struct SpriteSet: Codable, Hashable {
+    let frontDefault: String?
+    let frontFemale: String?
+
+    enum CodingKeys: String, CodingKey {
+        case frontDefault = "front_default"
+        case frontFemale = "front_female"
+    }
+}
+
+/// official-artwork: front_default / front_shiny
+struct OfficialArtworkSprites: Codable, Hashable {
+    let frontDefault: String?
+    let frontShiny: String?
+
+    enum CodingKeys: String, CodingKey {
+        case frontDefault = "front_default"
+        case frontShiny = "front_shiny"
+    }
+}
+
 
 struct Ability: Codable, Hashable {
     let ability: Species
