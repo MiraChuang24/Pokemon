@@ -34,8 +34,8 @@ class PokemonListViewModel: ObservableObject {
     // MARK: - Initialization
 
     init(
-        pokeAPIClient: PokeAPIClient = .init(),
-        favoriteStorage: FavoriteStorage = .shared
+        pokeAPIClient: PokeAPIClient,
+        favoriteStorage: FavoriteStorage
     ) {
         self.pokeAPIClient = pokeAPIClient
         self.favoriteStorage = favoriteStorage

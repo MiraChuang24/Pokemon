@@ -18,7 +18,7 @@ struct ImageLoaderView: View {
         ZStack {
             if showBackground {
                 RoundedRectangle(cornerRadius: 20)
-                    .fill(Color(.imageBackground))
+                    .fill(Color(.secondarySystemBackground))
             }
             if viewModel.isNoImage {
                 Image("questionmark")

@@ -35,7 +35,6 @@ struct PokemonListRowView: View {
             // Pokemon 圖片
             ImageLoaderView(viewModel: imageViewModel)
                 .frame(width: 80, height: 80)
-                .clipShape(RoundedRectangle(cornerRadius: 12))
 
             // Pokemon 資訊
             VStack(alignment: .leading, spacing: 6) {
@@ -72,8 +71,8 @@ struct PokemonListRowView: View {
             }
             .buttonStyle(.plain)
         }
-        .padding()
-        .background(Color(.secondarySystemBackground))
+        .padding(8)
+        .background(Color(.white))
         .cornerRadius(16)
         .shadow(color: Color.black.opacity(0.1), radius: 4, x: 0, y: 2)
     }

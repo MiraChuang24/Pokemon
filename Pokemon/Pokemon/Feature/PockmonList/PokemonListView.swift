@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct PokemonListView: View {
-    @StateObject private var viewModel = PokemonListViewModel()
+    @StateObject private var viewModel = PokemonListViewModel(pokeAPIClient: .init(), favoriteStorage: .shared)
     @EnvironmentObject private var router: MainRouter
 
     var body: some View {
         ZStack {
             if viewModel.isLoading && viewModel.pokemons.isEmpty {
                 // 初次載入
-                ProgressView("Loading Pokémon...")
+                ProgressView()
                     .scaleEffect(1.2)
             } else if let errorMessage = viewModel.errorMessage,
                 viewModel.pokemons.isEmpty
@@ -87,13 +87,15 @@ struct PokemonListView: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .navigationTitle("All Pokémon")
         .navigationBarTitleDisplayMode(.inline)
+        .background(Color(.secondarySystemBackground))
         .task {
-            // 使用 task 替代 onAppear，避免阻塞 UI
+            // 使用 task ，避免阻塞 UI
             if viewModel.pokemons.isEmpty {
                 // 添加微小延遲，讓 navigation transition 完成
-                try? await Task.sleep(nanoseconds: 300_000_000) // 0.1 秒
+                try? await Task.sleep(nanoseconds: 200_000_000) // 0.1 秒
                 viewModel.loadInitialData()
             }
         }
