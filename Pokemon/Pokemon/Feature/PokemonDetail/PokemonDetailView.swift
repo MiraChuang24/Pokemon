@@ -52,7 +52,7 @@ struct PokemonDetailView: View {
 
     var body: some View {
         ZStack(alignment: .top) {
-            header
+            typeColorCare
 
             ScrollView {
                 VStack(spacing: 24) {
@@ -107,13 +107,13 @@ struct PokemonDetailView: View {
 
     // MARK: - Header（上方漸層）
 
-    private var header: some View {
+    private var typeColorCare: some View {
         RoundedRectangle(cornerRadius: 32, style: .continuous)
             .fill(
                 LinearGradient(
                     colors: typeColors,
-                    startPoint: .leading,
-                    endPoint: .trailing
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
                 )
             )
             .frame(height: 300)
@@ -150,16 +150,16 @@ struct PokemonDetailView: View {
     }
 
     private func typeBadge(_ type: PokemonType) -> some View {
-        Text(type.name.uppercased())
-            .font(.system(size: 14, weight: .semibold))
-            .foregroundColor(.white)
-            .padding(.horizontal, 18)
-            .padding(.vertical, 8)
-            .background(
-                Capsule()
-                    .fill(Color(type.color))
-            )
-    }
+    Text(type.name.capitalized)
+        .font(.system(size: 14, weight: .semibold))
+        .foregroundColor(.white)
+        .padding(.horizontal, 18)
+        .padding(.vertical, 8)
+        .background(
+            Capsule()
+                .fill(Color(type.color))
+        )
+}
 
     // MARK: - Weight / Height
 
@@ -187,7 +187,7 @@ struct PokemonDetailView: View {
     // MARK: - Base Stats 區塊
 
     private var statsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 25) {
             Text("Base Stats")
                 .font(.system(size: 20, weight: .bold))
                 .padding(.bottom, 4)

@@ -25,10 +25,16 @@ struct StatRowView: View {
                 ZStack(alignment: .leading) {
                     Capsule()
                         .fill(Color(.systemGray5))
-                        .frame(height: 10)
 
                     Capsule()
-                        .fill(color)
+                        .fill(Color.white)
+                        .fill(
+                            LinearGradient(
+                                colors: [color, color.opacity(0.6)],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
                         .frame(
                             width: max(
                                 0,
@@ -36,18 +42,20 @@ struct StatRowView: View {
                                     geo.size.width * CGFloat(value) / CGFloat(maxValue),
                                     geo.size.width
                                 )
-                            ),
-                            height: 10
+                            )
                         )
+                    HStack{
+                        Spacer()
+                        Text("\(value)/\(maxValue)")
+                            .font(.system(size: 12, weight: .semibold))
+                            .foregroundColor(.black)
+                        Spacer()
+                    }
                 }
             }
-            .frame(height: 10)
 
-            Text("\(value)/\(maxValue)")
-                .font(.system(size: 12, weight: .semibold))
-                .foregroundColor(.secondary)
-                .frame(width: 70, alignment: .trailing)
+            
         }
-        .frame(height: 24)
+        .frame(height: 15)
     }
 }
