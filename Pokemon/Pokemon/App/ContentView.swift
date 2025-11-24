@@ -22,8 +22,8 @@ struct ContentView: View {
                     case .pokemonList:
                         PokemonListView()
 
-                    case .pokemonDetail(let id):
-                        EmptyView()
+                    case .pokemonDetail(let pokemon):
+                        PokemonDetailView(pokemon: pokemon)
                     }
                 }
         }
