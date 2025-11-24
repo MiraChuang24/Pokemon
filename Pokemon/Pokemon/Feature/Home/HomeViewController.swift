@@ -53,7 +53,7 @@ final class HomeViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
                 guard let self = self else { return }
-                reloadSection(section: .featuredPokémon, items: items)
+                applySnapshot()
             }
             .store(in: &cancellables)
         vm.pokemonDidChange
@@ -66,14 +66,14 @@ final class HomeViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
                 guard let self = self else { return }
-                reloadSection(section: .types, items: items)
+                applySnapshot()
             }
             .store(in: &cancellables)
         vm.$regionItems
             .receive(on: DispatchQueue.main)
             .sink { [weak self] items in
                 guard let self = self else { return }
-                reloadSection(section: .regions, items: items)
+                applySnapshot()
             }
             .store(in: &cancellables)
         vm.regionDidChange
@@ -103,26 +103,6 @@ final class HomeViewController: UIViewController {
         }
 
         snapshot.reloadItems([item])
-        dataSource.apply(snapshot, animatingDifferences: true)
-    }
-    /// 重新載入 Type Section 的 UI
-    private func reloadSection(section: HomeSection, items: [HomeItem]) {
-        var snapshot = dataSource.snapshot()
-
-        // 確認 types section 存在
-        guard snapshot.sectionIdentifiers.contains(section) else {
-            print("Types section not found in snapshot")
-            return
-        }
-
-        // 刪除 types section 的舊 items
-        let currentTypeItems = snapshot.itemIdentifiers(inSection: .types)
-        snapshot.deleteItems(currentTypeItems)
-
-        // 添加新的 type items
-        snapshot.appendItems(items, toSection: .types)
-
-        // 套用變更，並帶有動畫效果
         dataSource.apply(snapshot, animatingDifferences: true)
     }
     private func setupView() {
