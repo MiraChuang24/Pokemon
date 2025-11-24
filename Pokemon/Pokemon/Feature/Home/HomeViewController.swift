@@ -12,119 +12,71 @@ import UIKit
 
 final class HomeViewController: UIViewController {
 
+    // MARK: - Typealias
     typealias DataSource = UICollectionViewDiffableDataSource<
         HomeSection, HomeItem
     >
 
+    // MARK: - UI Components
     private lazy var collectionView: UICollectionView = {
         .init(frame: .zero, collectionViewLayout: createLayout())
     }()
 
+    // MARK: - DataSource
     private lazy var dataSource = createDataSource()
 
+    // MARK: - Callbacks (Navigation)
     var onTapSeeMoreFeatured: (() -> Void)?
-    var onTapPokemon: ((PokemonDetailResponse) -> Void)?  // 點某隻寶可夢要進詳細頁
+    var onTapPokemon: ((PokemonDetailResponse) -> Void)?
 
+    // MARK: - ViewModel
     var vm = HomeViewModel()
+
+    // MARK: - Combine
     private var cancellables = Set<AnyCancellable>()
 
+    // MARK: - Lifecycle
     override func viewDidLoad() {
-
         super.viewDidLoad()
+
         setupView()
         setupCombine()
+
         Task {
             await vm.fetchPokemons()
             await vm.fetchAllTypes()
             await vm.fetchAllRegion()
         }
     }
+}
 
-    /*
-    // MARK: - Navigation
-    
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-    private func setupCombine() {
-        // 監聽 Pokémon IDs 變化，更新 UI
-        vm.$pokemonItems
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] items in
-                guard let self = self else { return }
-                applySnapshot()
-            }
-            .store(in: &cancellables)
-        vm.pokemonDidChange
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] id in
-                self?.reloadItem(item: .pokemon(id))
-            }
-            .store(in: &cancellables)
-        vm.$typeItems
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] items in
-                guard let self = self else { return }
-                applySnapshot()
-            }
-            .store(in: &cancellables)
-        vm.$regionItems
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] items in
-                guard let self = self else { return }
-                applySnapshot()
-            }
-            .store(in: &cancellables)
-        vm.regionDidChange
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] id in
-                guard let self = self else { return }
-                reloadItem(item: .region(id))
-            }
-            .store(in: &cancellables)
+// MARK: - Setup UI
+extension HomeViewController {
 
-        // 監聽錯誤訊息
-        vm.$errorMessage
-            .compactMap { $0 }  // 只處理非 nil 的錯誤
-            .receive(on: DispatchQueue.main)
-            .sink { [weak self] errorMessage in
-                guard let self = self else { return }
-                print("Error: \(errorMessage)")
-                self.showErrorAlert(message: errorMessage)
-            }
-            .store(in: &cancellables)
-    }
-    private func reloadItem(item: HomeItem) {
-        var snapshot = dataSource.snapshot()
-        // 確認這個 item 目前有在 snapshot 裡，才 reload
-        guard snapshot.indexOfItem(item) != nil else {
-            return
-        }
-
-        snapshot.reloadItems([item])
-        dataSource.apply(snapshot, animatingDifferences: true)
-    }
     private func setupView() {
-        collectionView.backgroundColor = .clear
         view.backgroundColor = .secondarySystemBackground
         setupCollectionView()
     }
+
     private func setupCollectionView() {
-        collectionViewUI()
+        
+        collectionView.backgroundColor = .clear
+        view.addSubview(collectionView)
+
+        collectionView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+
         collectionView.delegate = self
-        // Register cells
-        HomeItem.allCases.forEach { [weak self] item in
-            guard let self else { return }
+        // Register All Cells
+        HomeItem.allCases.forEach { item in
             collectionView.register(
                 item.cellNib,
                 forCellWithReuseIdentifier: item.cellIdentifier
             )
         }
 
-        // Register header
+        // Register Header
         collectionView.register(
             HomeSectionHeaderView.self,
             forSupplementaryViewOfKind: UICollectionView
@@ -135,26 +87,74 @@ final class HomeViewController: UIViewController {
         collectionView.dataSource = dataSource
         applySnapshot()
     }
-    private func collectionViewUI() {
-        view.addSubview(collectionView)
-        collectionView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+}
+
+// MARK: - Combine Setup
+extension HomeViewController {
+
+    private func setupCombine() {
+
+        // 合併三個更新 Section UI 的 publisher
+        let listUpdates = Publishers.MergeMany(
+            vm.$pokemonItems.map { _ in () },
+            vm.$typeItems.map { _ in () },
+            vm.$regionItems.map { _ in () }
+        )
+
+        listUpdates
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.applySnapshot()
+            }
+            .store(in: &cancellables)
+
+        // 個別 reload Item（避免整個 section reload）
+        vm.pokemonDidChange
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] id in
+                self?.reloadItem(item: .pokemon(id))
+            }
+            .store(in: &cancellables)
+
+        vm.regionDidChange
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] id in
+                self?.reloadItem(item: .region(id))
+            }
+            .store(in: &cancellables)
+
+        // Error Message
+        vm.$errorMessage
+            .compactMap { $0 }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] message in
+                self?.showMessage(
+                    title: "錯誤",
+                    message: message
+                )
+            }
+            .store(in: &cancellables)
     }
+}
+
+// MARK: - DataSource
+extension HomeViewController {
+
     private func createDataSource() -> DataSource {
-        let dataSource = DataSource(
-            collectionView: collectionView
-        ) { collectionView, indexPath, item in
+        let dataSource: DataSource = .init(collectionView: collectionView) {
+            [weak self] collectionView, indexPath, item in
+
+            guard let self else { return UICollectionViewCell() }
+
             let cell = collectionView.dequeueReusableCell(
                 withReuseIdentifier: item.cellIdentifier,
                 for: indexPath
             )
 
-            // 根據不同的 item 類型配置 cell
             switch item {
+
             case .pokemon(let id):
-                if let pokemonCell = cell
-                    as? FeaturedPokemonCollectionViewCell
+                if let pokemonCell = cell as? FeaturedPokemonCollectionViewCell
                 {
                     let state = self.vm.pokemons[id] ?? .noData
                     pokemonCell.configure(
@@ -163,29 +163,23 @@ final class HomeViewController: UIViewController {
                         style: (.init(rawValue: indexPath.row % 3) ?? .no)
                     )
                 }
+
             case .type(let type):
-                if let typeCell = cell
-                    as? TypeCollectionViewCell
-                {
-                    typeCell.configure(with: type)
-                }
+                (cell as? TypeCollectionViewCell)?
+                    .configure(with: type)
+
             case .region(let id):
-                if let regionCell = cell
-                    as? RegionCollectionViewCell
-                {
-                    let region = self.vm.regions[id]
-                    regionCell.configure(with: region)
-                }
+                (cell as? RegionCollectionViewCell)?
+                    .configure(with: self.vm.regions[id])
             }
 
             return cell
         }
 
-        // Configure supplementary view (header)
+        // Header Provider
         dataSource.supplementaryViewProvider = {
-            collectionView,
-            kind,
-            indexPath in
+            [weak self] collectionView, kind, indexPath in
+            guard let self else { return nil }
             guard kind == UICollectionView.elementKindSectionHeader else {
                 return nil
             }
@@ -203,7 +197,6 @@ final class HomeViewController: UIViewController {
                     showMoreButton: section.showMoreButton
                 )
 
-                // Handle more button tap
                 header?.onMoreButtonTapped = { [weak self] in
                     self?.handleMoreButtonTapped(for: section)
                 }
@@ -214,178 +207,180 @@ final class HomeViewController: UIViewController {
 
         return dataSource
     }
+}
 
-    // 在 viewDidLoad 或適當的地方應用 snapshot
+// MARK: - Snapshot
+extension HomeViewController {
+
     private func applySnapshot() {
         var snapshot = NSDiffableDataSourceSnapshot<HomeSection, HomeItem>()
 
-        // Featured Pokémon Section
         snapshot.appendSections([.featuredPokémon])
         snapshot.appendItems(vm.pokemonItems, toSection: .featuredPokémon)
-        // Types Section
+
         snapshot.appendSections([.types])
         snapshot.appendItems(vm.typeItems, toSection: .types)
 
-        // Regions Section
         snapshot.appendSections([.regions])
         snapshot.appendItems(vm.regionItems, toSection: .regions)
 
         dataSource.apply(snapshot, animatingDifferences: false)
     }
+
+    private func reloadItem(item: HomeItem) {
+        var snapshot = dataSource.snapshot()
+        guard snapshot.indexOfItem(item) != nil else { return }
+
+        snapshot.reloadItems([item])
+        dataSource.apply(snapshot, animatingDifferences: true)
+    }
+}
+
+// MARK: - Layout
+extension HomeViewController {
+
     private func createLayout() -> UICollectionViewLayout {
-        return UICollectionViewCompositionalLayout {
-            [weak self] sectionIndex, environment in
+        UICollectionViewCompositionalLayout { [weak self] index, environment in
             guard let self,
-                let section = HomeSection(rawValue: sectionIndex)
+                let section = HomeSection(rawValue: index)
             else { return nil }
 
             switch section {
-            case .featuredPokémon:
-                return featuredPokémonLayout()
-            case .types:
-                return typesLayout()
-            case .regions:
-                return regionsLayout()
+            case .featuredPokémon: return self.featuredPokémonLayout()
+            case .types: return self.typesLayout()
+            case .regions: return self.regionsLayout()
             }
         }
     }
 
-    /// Featured Pokémon Section: 1 row, 3 columns, horizontal scrolling, 9 items max
+    // Featured Pokémon Section
     private func featuredPokémonLayout() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
-            heightDimension: .estimated(60)
+        let item = NSCollectionLayoutItem(
+            layoutSize: .init(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .estimated(60)
+            )
         )
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-        let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(0.85),  // Show 3 cells, each cell ≈ 1/3
-            heightDimension: .estimated(180)
-        )
         let group = NSCollectionLayoutGroup.vertical(
-            layoutSize: groupSize,
+            layoutSize: .init(
+                widthDimension: .fractionalWidth(0.85),
+                heightDimension: .estimated(180)
+            ),
             repeatingSubitem: item,
             count: 3
         )
+
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .groupPaging
-        section.contentInsets = NSDirectionalEdgeInsets(
+        section.contentInsets = .init(
             top: 8,
             leading: 16,
             bottom: 16,
             trailing: 16
         )
         section.interGroupSpacing = 16
-
-        // Add header
-
-        section.boundarySupplementaryItems = [createHeaderLayout()]
-
+        section.boundarySupplementaryItems = [makeHeaderItem()]
         return section
     }
 
-    /// Types Section: horizontal scrolling, item width fixed (e.g., 80pt), height small
+    // Types Section
     private func typesLayout() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
-            heightDimension: .fractionalHeight(1)
+        let item = NSCollectionLayoutItem(
+            layoutSize: .init(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .fractionalHeight(1)
+            )
         )
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-        let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(0.3),
-            heightDimension: .fractionalWidth(0.18)
-        )
         let group = NSCollectionLayoutGroup.horizontal(
-            layoutSize: groupSize,
+            layoutSize: .init(
+                widthDimension: .fractionalWidth(0.3),
+                heightDimension: .fractionalWidth(0.18)
+            ),
             subitems: [item]
         )
 
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .continuous
-        section.contentInsets = NSDirectionalEdgeInsets(
+        section.contentInsets = .init(
             top: 0,
             leading: 16,
             bottom: 16,
             trailing: 16
         )
         section.interGroupSpacing = 12
-
-        // Add header
-
-        section.boundarySupplementaryItems = [createHeaderLayout()]
-
+        section.boundarySupplementaryItems = [makeHeaderItem()]
         return section
     }
 
-    /// Regions Section: 1 row, 6 columns, no scrolling, cells evenly spaced
+    // Regions Section
     private func regionsLayout() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(0.5),
-            heightDimension: .fractionalWidth(0.25)
+        let item = NSCollectionLayoutItem(
+            layoutSize: .init(
+                widthDimension: .fractionalWidth(0.5),
+                heightDimension: .fractionalWidth(0.25)
+            )
         )
-        let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-        let groupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1),
-            heightDimension: .estimated(60)
-        )
         let group = NSCollectionLayoutGroup.horizontal(
-            layoutSize: groupSize,
+            layoutSize: .init(
+                widthDimension: .fractionalWidth(1),
+                heightDimension: .estimated(60)
+            ),
             repeatingSubitem: item,
             count: 2
         )
+
         group.interItemSpacing = .fixed(20)
 
         let section = NSCollectionLayoutSection(group: group)
         section.orthogonalScrollingBehavior = .none
-        section.contentInsets = NSDirectionalEdgeInsets(
+        section.contentInsets = .init(
             top: 0,
             leading: 16,
             bottom: 16,
             trailing: 16
         )
         section.interGroupSpacing = 20
-
-        // Add header
-
-        section.boundarySupplementaryItems = [createHeaderLayout()]
-
+        section.boundarySupplementaryItems = [makeHeaderItem()]
         return section
     }
 
-    private func createHeaderLayout()
-        -> NSCollectionLayoutBoundarySupplementaryItem
+    // MARK: - Header Layout
+    private func makeHeaderItem() -> NSCollectionLayoutBoundarySupplementaryItem
     {
-        // Add header
-        let headerSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(1.0),
-            heightDimension: .estimated(44)
-        )
-        let header = NSCollectionLayoutBoundarySupplementaryItem(
-            layoutSize: headerSize,
+        NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: .init(
+                widthDimension: .fractionalWidth(1.0),
+                heightDimension: .estimated(44)
+            ),
             elementKind: UICollectionView.elementKindSectionHeader,
             alignment: .top
         )
-        return header
     }
-    // MARK: - Helper Methods
+}
 
-    /// 處理 More 按鈕點擊
+// MARK: - Actions
+extension HomeViewController {
+
     private func handleMoreButtonTapped(for section: HomeSection) {
         switch section {
         case .featuredPokémon:
             onTapSeeMoreFeatured?()
         default:
-            showAlert(
+            showMessage(
                 title: "功能開發中",
                 message: "此功能尚未完成，敬請期待！"
             )
         }
     }
+}
 
-    /// 顯示簡單提示
-    private func showAlert(title: String, message: String) {
+// MARK: - Helper (Unified Alert)
+extension HomeViewController {
+
+    private func showMessage(title: String, message: String) {
         let alert = UIAlertController(
             title: title,
             message: message,
@@ -394,20 +389,11 @@ final class HomeViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "確定", style: .default))
         present(alert, animated: true)
     }
-
-    /// 顯示錯誤提示
-    private func showErrorAlert(message: String) {
-        let alert = UIAlertController(
-            title: "錯誤",
-            message: message,
-            preferredStyle: .alert
-        )
-        alert.addAction(UIAlertAction(title: "確定", style: .default))
-        present(alert, animated: true)
-    }
 }
+
 // MARK: - UICollectionViewDelegate
 extension HomeViewController: UICollectionViewDelegate {
+
     func collectionView(
         _ collectionView: UICollectionView,
         didSelectItemAt indexPath: IndexPath
@@ -419,19 +405,13 @@ extension HomeViewController: UICollectionViewDelegate {
         }
 
         switch item {
-        case .pokemon(let id):
-            // 從 ViewModel 拿這隻寶可夢的狀態
-            guard let state = vm.pokemons[id] else { return }
 
-            // 只有在已經載入完成時才跳詳情頁
-            if case .loaded(let pokemon) = state {
-                onTapPokemon?(pokemon)  // 呼叫 closure 交給外層處理導航
+        case .pokemon(let id):
+            if case .loaded(let pokemon) = vm.pokemons[id] {
+                onTapPokemon?(pokemon)
             }
 
-        case .type:
-            break
-
-        case .region:
+        case .type, .region:
             break
         }
     }
