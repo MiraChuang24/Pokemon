@@ -188,6 +188,14 @@ struct PokemonListResponse: Codable {
         case count, next, previous, results
     }
     
+    init(count: Int, next: String?, previous: String?, results: [PokeListResult], nextParameters: APIParameters?) {
+        self.count = count
+        self.next = next
+        self.previous = previous
+        self.results = results
+        self.nextParameters = nextParameters
+    }
+    
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
@@ -214,6 +222,12 @@ struct PokeListResult: Codable, Hashable {
         case name, url
     }
 
+    init (name: String, url: String, id: Int? = nil) {
+        self.name = name
+        self.url = url
+        self.id = id
+    }
+    
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.name = try container.decode(String.self, forKey: .name)

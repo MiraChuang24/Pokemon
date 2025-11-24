@@ -20,15 +20,15 @@ protocol PokeAPIClientType {
     // MARK: - Type
 
     /// 取得 Type 列表
-//    func fetchTypeList(limit: Int, offset: Int) async throws -> TypeListResponse
-//
-//    // MARK: - Region
-//
-//    /// 取得 Region 列表
-//    func fetchRegionList() async throws -> RegionListResponse
-//
-//    /// 取得 Region 詳細資訊
-//    func fetchRegionDetail(id: Int) async throws -> RegionDetailResponse
+    func fetchTypeList(limit: Int, offset: Int) async throws -> TypeListResponse
+
+    // MARK: - Region
+
+    /// 取得 Region 列表
+    func fetchRegionList() async throws -> RegionListResponse
+
+    /// 取得 Region 詳細資訊
+    func fetchRegionDetail(id: Int) async throws -> RegionDetailResponse
 }
 
 /// 實際的 PokeAPI 實作

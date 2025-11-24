@@ -33,9 +33,11 @@ final class HomeViewController: UIViewController {
         super.viewDidLoad()
         setupView()
         setupCombine()
-        vm.getPokemons()
-        vm.getAllTypes()
-        vm.getAllRegion()
+        Task {
+            await vm.fetchPokemons()
+            await vm.fetchAllTypes()
+            await vm.fetchAllRegion()
+        }
     }
 
     /*

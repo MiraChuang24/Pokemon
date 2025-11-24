@@ -19,14 +19,32 @@ struct RegionListResponse: Codable {
     enum CodingKeys: String, CodingKey {
         case count, next, previous, results
     }
-
+    init(
+        count: Int,
+        next: String?,
+        previous: String?,
+        results: [RegionListItem],
+        nextParameters: APIParameters?
+    ) {
+        self.count = count
+        self.next = next
+        self.previous = previous
+        self.results = results
+        self.nextParameters = nextParameters
+    }
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
         self.count = try container.decode(Int.self, forKey: .count)
         self.next = try container.decodeIfPresent(String.self, forKey: .next)
-        self.previous = try container.decodeIfPresent(String.self, forKey: .previous)
-        self.results = try container.decode([RegionListItem].self, forKey: .results)
+        self.previous = try container.decodeIfPresent(
+            String.self,
+            forKey: .previous
+        )
+        self.results = try container.decode(
+            [RegionListItem].self,
+            forKey: .results
+        )
 
         if let nextURL = self.next {
             self.nextParameters = APIParameters(url: nextURL)
@@ -34,16 +52,25 @@ struct RegionListResponse: Codable {
             self.nextParameters = nil
         }
     }
+    
 }
 
 // MARK: - Region List Item
 struct RegionListItem: Codable, Hashable {
     let name: String
     let url: String
-    let id: Int?     // 從 URL 自動解析 region id
+    var id: Int?  // 從 URL 自動解析 region id
 
     enum CodingKeys: String, CodingKey {
         case name, url
+    }
+    init(
+        name: String,
+        url: String
+    ) {
+        self.name = name
+        self.url = url
+        self.id = getID()
     }
 
     init(from decoder: Decoder) throws {
@@ -52,13 +79,19 @@ struct RegionListItem: Codable, Hashable {
         self.name = try container.decode(String.self, forKey: .name)
         self.url = try container.decode(String.self, forKey: .url)
 
-        // 從 URL 尾端解析出 /region/{id}/
-        let trimmed = url.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        id = getID()
+    }
+    func getID() -> Int? {
+        // 從 URL 拆出最後的 id，例如 /type/10/ -> 10
+        let trimmed = url.trimmingCharacters(
+            in: CharacterSet(charactersIn: "/")
+        )
         if let last = trimmed.split(separator: "/").last,
-           let parsedID = Int(last) {
-            self.id = parsedID
+            let parsedID = Int(last)
+        {
+            return parsedID
         } else {
-            self.id = nil
+            return nil
         }
     }
 }
@@ -80,6 +113,16 @@ struct RegionDetailResponse: Codable, Hashable {
         case pokedexes
         case versionGroups = "version_groups"
     }
+    
+    init(id: Int, name: String, locations: [RegionLocation], mainGeneration: NamedAPIResource?, names: [RegionName], pokedexes: [NamedAPIResource], versionGroups: [RegionVersionGroup]) {
+        self.id = id
+        self.name = name
+        self.locations = locations
+        self.mainGeneration = mainGeneration
+        self.names = names
+        self.pokedexes = pokedexes
+        self.versionGroups = versionGroups
+    }
 }
 struct RegionLocation: Codable, Hashable {
     let name: String
@@ -96,9 +139,12 @@ struct RegionLocation: Codable, Hashable {
         self.url = try container.decode(String.self, forKey: .url)
 
         // 從 URL "/location/{id}/" 解析出數字
-        let trimmed = url.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        let trimmed = url.trimmingCharacters(
+            in: CharacterSet(charactersIn: "/")
+        )
         if let last = trimmed.split(separator: "/").last,
-           let parsedID = Int(last) {
+            let parsedID = Int(last)
+        {
             self.id = parsedID
         } else {
             self.id = nil
@@ -121,9 +167,12 @@ struct RegionVersionGroup: Codable, Hashable {
         self.url = try container.decode(String.self, forKey: .url)
 
         // 從 "/version-group/{id}/" 解析 ID
-        let trimmed = url.trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+        let trimmed = url.trimmingCharacters(
+            in: CharacterSet(charactersIn: "/")
+        )
         if let last = trimmed.split(separator: "/").last,
-           let parsedID = Int(last) {
+            let parsedID = Int(last)
+        {
             self.id = parsedID
         } else {
             self.id = nil
@@ -138,4 +187,3 @@ struct NamedAPIResource: Codable, Hashable {
     let name: String
     let url: String
 }
-

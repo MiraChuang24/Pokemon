@@ -120,7 +120,13 @@ struct TypeListResponse: Codable {
     enum CodingKeys: String, CodingKey {
         case count, next, previous, results
     }
-
+    init(count: Int, next: String?, previous: String?, results: [TypeListItem], nextParameters: APIParameters?) {
+        self.count = count
+        self.next = next
+        self.previous = previous
+        self.results = results
+        self.nextParameters = nextParameters
+    }
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
 
@@ -147,17 +153,31 @@ struct TypeListResponse: Codable {
 struct TypeListItem: Codable, Hashable {
     let name: String
     let url: String
-    let id: Int?
+    var id: Int?
 
     enum CodingKeys: String, CodingKey {
         case name, url
+    }
+    
+    init (name: String, url: String) {
+        self.name = name
+        self.url = url
+        id = getID()
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.name = try container.decode(String.self, forKey: .name)
         self.url = try container.decode(String.self, forKey: .url)
+        id = getID()
+    }
 
+    /// 對應到你剛剛的 PokemonType enum（用 url 解析）
+    var pokemonType: PokemonType {
+        PokemonType(from: url)
+    }
+    
+    func getID() -> Int? {
         // 從 URL 拆出最後的 id，例如 /type/10/ -> 10
         let trimmed = url.trimmingCharacters(
             in: CharacterSet(charactersIn: "/")
@@ -165,14 +185,9 @@ struct TypeListItem: Codable, Hashable {
         if let last = trimmed.split(separator: "/").last,
             let parsedID = Int(last)
         {
-            self.id = parsedID
+            return parsedID
         } else {
-            self.id = nil
+            return nil
         }
-    }
-
-    /// 對應到你剛剛的 PokemonType enum（用 url 解析）
-    var pokemonType: PokemonType {
-        PokemonType(from: url)
     }
 }

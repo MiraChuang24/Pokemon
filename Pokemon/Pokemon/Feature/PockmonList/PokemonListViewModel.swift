@@ -20,7 +20,7 @@ class PokemonListViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    private let pokeAPIClient: PokeAPIClient
+    private let pokeAPIClient: PokeAPIClientType
     private let favoriteStorage: FavoriteStorage
     private var cancellables = Set<AnyCancellable>()
 
@@ -34,7 +34,7 @@ class PokemonListViewModel: ObservableObject {
     // MARK: - Initialization
 
     init(
-        pokeAPIClient: PokeAPIClient,
+        pokeAPIClient: PokeAPIClientType,
         favoriteStorage: FavoriteStorage
     ) {
         self.pokeAPIClient = pokeAPIClient
@@ -94,7 +94,7 @@ class PokemonListViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    private func fetchPokemons(isInitial: Bool) async {
+    func fetchPokemons(isInitial: Bool) async {
         guard !isFetchingMore else { return }
 
         isFetchingMore = true

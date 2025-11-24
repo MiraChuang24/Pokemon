@@ -23,48 +23,34 @@ class HomeViewModel: ObservableObject {
     var regions: [Int: RegionDetailResponse] = [:]
     let regionDidChange = PassthroughSubject<Int, Never>()
 
-    let pokeAPIClient: PokeAPIClient = .init()
+    private let pokeAPIClient: PokeAPIClientType
     private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Init
 
-    // MARK: - Public Methods
-
-    func getPokemons() {
-        Task {
-            await fetchPokemons()
-        }
+    init(pokeAPIClient: PokeAPIClientType = PokeAPIClient()) {
+        self.pokeAPIClient = pokeAPIClient
     }
-    func getAllTypes() {
-        Task {
-            await fetchAllTypes()
-        }
-    }
-    func getAllRegion() {
-        Task {
-            await fetchAllRegion()
-        }
-    }
-
-    // MARK: - Private Methods
+    
     @MainActor
-    private func fetchAllRegion() async {
-        Task {
-            errorMessage = nil
-            typeItems.removeAll()
+    func fetchAllRegion() async {
+        errorMessage = nil
+        regionItems.removeAll()
 
-            do {
-                let response = try await pokeAPIClient.fetchRegionList()
-                response.results.prefix(6).forEach { (region) in
-                    guard let id = region.id else { return }
-                    regionItems.append(HomeItem.region(id))
-                    regions[id] = nil
-                    fetchRegion(id: id)
-                }
-            } catch {
-                errorMessage =
-                    "Failed to fetch types: \(error.localizedDescription)"
+        do {
+            let response = try await pokeAPIClient.fetchRegionList()
+            let ids = response.results.prefix(6).compactMap(\.id)
 
+            // 一次塞好所有 regionItems
+            regionItems = ids.map { HomeItem.region($0) }
+
+            // 再去打每個 region 的 detail
+            ids.forEach { id in
+                regions[id] = nil
+                fetchRegion(id: id)
             }
-
+        } catch {
+            errorMessage = "Failed to fetch regions: \(error.localizedDescription)"
         }
     }
     private func fetchRegion(id: Int) {
@@ -139,7 +125,7 @@ class HomeViewModel: ObservableObject {
     }
 
     @MainActor
-    private func fetchPokemons() async {
+    func fetchPokemons() async {
         errorMessage = nil
 
         do {

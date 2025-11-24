@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PokemonListView: View {
     @StateObject private var viewModel = PokemonListViewModel(
-        pokeAPIClient: .init(),
+        pokeAPIClient: PokeAPIClient.init(),
         favoriteStorage: .shared
     )
     @EnvironmentObject private var router: MainRouter
