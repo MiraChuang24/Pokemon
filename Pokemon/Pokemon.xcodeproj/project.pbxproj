@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		9A4941702ED35598007EFD9E /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = 9A49416F2ED35598007EFD9E /* Kingfisher */; };
 		9A4942572ED37812007EFD9E /* SnapKit in Frameworks */ = {isa = PBXBuildFile; productRef = 9A4942562ED37812007EFD9E /* SnapKit */; };
+		FFAAE00E307CC3E300AD2FD8 /* PokemonCore in Frameworks */ = {isa = PBXBuildFile; productRef = FFAAE00D307CC3E300AD2FD8 /* PokemonCore */; };
 		FFE402DA2ED3F849008C4FA1 /* LookinServer in Frameworks */ = {isa = PBXBuildFile; productRef = FFE402D92ED3F849008C4FA1 /* LookinServer */; };
 /* End PBXBuildFile section */
 
@@ -33,6 +34,7 @@
 		9A4941112ED314B7007EFD9E /* Pokemon.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pokemon.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A49411E2ED314B9007EFD9E /* PokemonTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PokemonTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9A4941282ED314B9007EFD9E /* PokemonUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PokemonUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FFAAE00A307CBC6100AD2FD8 /* PokemonCore */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = PokemonCore; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -59,6 +61,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9A4941702ED35598007EFD9E /* Kingfisher in Frameworks */,
+				FFAAE00E307CC3E300AD2FD8 /* PokemonCore in Frameworks */,
 				FFE402DA2ED3F849008C4FA1 /* LookinServer in Frameworks */,
 				9A4942572ED37812007EFD9E /* SnapKit in Frameworks */,
 			);
@@ -84,6 +87,7 @@
 		9A4941082ED314B7007EFD9E = {
 			isa = PBXGroup;
 			children = (
+				FFAAE00A307CBC6100AD2FD8 /* PokemonCore */,
 				9A4941132ED314B7007EFD9E /* Pokemon */,
 				9A4941212ED314B9007EFD9E /* PokemonTests */,
 				9A49412B2ED314B9007EFD9E /* PokemonUITests */,
@@ -132,6 +136,7 @@
 				9A49416F2ED35598007EFD9E /* Kingfisher */,
 				9A4942562ED37812007EFD9E /* SnapKit */,
 				FFE402D92ED3F849008C4FA1 /* LookinServer */,
+				FFAAE00D307CC3E300AD2FD8 /* PokemonCore */,
 			);
 			productName = Pokemon;
 			productReference = 9A4941112ED314B7007EFD9E /* Pokemon.app */;
@@ -219,6 +224,7 @@
 				9A49416D2ED35501007EFD9E /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				9A4942272ED36D7C007EFD9E /* XCRemoteSwiftPackageReference "SnapKit" */,
 				FFE402D82ED3F839008C4FA1 /* XCRemoteSwiftPackageReference "LookinServer" */,
+				FFAAE00C307CC3E300AD2FD8 /* XCLocalSwiftPackageReference "PokemonCore" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 9A4941122ED314B7007EFD9E /* Products */;
@@ -604,6 +610,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		FFAAE00C307CC3E300AD2FD8 /* XCLocalSwiftPackageReference "PokemonCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = PokemonCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		9A49416D2ED35501007EFD9E /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -641,6 +654,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 9A4942272ED36D7C007EFD9E /* XCRemoteSwiftPackageReference "SnapKit" */;
 			productName = SnapKit;
+		};
+		FFAAE00D307CC3E300AD2FD8 /* PokemonCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PokemonCore;
 		};
 		FFE402D92ED3F849008C4FA1 /* LookinServer */ = {
 			isa = XCSwiftPackageProductDependency;
